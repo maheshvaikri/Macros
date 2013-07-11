@@ -80,45 +80,42 @@ Sub CreateFilteredReport()
     
 End Sub
 
-Sub CoachesReport(ByVal CoachName As String)
+Sub CoachesReport(ByVal Name As String)
     ActiveWorkbook.Sheets("Active").Copy After:=Worksheets("Active")
-    Sheets("Active (2)").name = CoachName
-    Sheets(CoachName).Select
+    Sheets("Active (2)").Name = Name
+    Sheets(Name).Select
     Range("A1").CurrentRegion.Select
-    
-    
-    ' TODO
-    '--Fix Fulton Hogan - try to get it using wild cards
      
-    If CoachName Like "Onirik" Then '--Branch for suppliers
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Clear
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(6) _
+     
+    If Name Like "Onirik" Then '--Branch for suppliers
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Clear
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(6) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(5) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(5) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(3) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(3) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(1) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(1) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
     
-    ElseIf CoachName Like "Harrison Grierson" Or CoachName Like "*Fulton Hogan*" Or CoachName Like "CIGNA" Then '-- Branch for companies
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Clear
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(3) _
+    ElseIf Name Like "Harrison Grierson" Or Name Like "Fulton Hogan" Or Name Like "CIGNA" Then '-- Branch for companies
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Clear
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(3) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(1) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(1) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
     
     Else '--Branch for coaches
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Clear
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(5) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Clear
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(5) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(3) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(3) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-        ActiveWorkbook.Worksheets(CoachName).Sort.SortFields.Add Key:=Selection.Columns(1) _
+        ActiveWorkbook.Worksheets(Name).Sort.SortFields.Add Key:=Selection.Columns(1) _
             , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
     End If
     
-    With ActiveWorkbook.Worksheets(CoachName).Sort
+    With ActiveWorkbook.Worksheets(Name).Sort
         .SetRange Range("A1").CurrentRegion
         .Header = xlYes
         .MatchCase = False
@@ -127,10 +124,10 @@ Sub CoachesReport(ByVal CoachName As String)
         .Apply
     End With
     
-    RemoveOtherCoaches (CoachName) 'Pass in the name passed in at the top
+    RemoveOtherCoaches (Name) 'Pass in the name passed in at the top
     End Sub
    
-   Sub RemoveOtherCoaches(ByVal CoachName As String) 'pass coach name to search for and filter by
+   Sub RemoveOtherCoaches(ByVal Name As String) 'pass coach name to search for and filter by
 
 Dim FirstRow As Long
 Dim LastRow As Long
@@ -142,17 +139,21 @@ LastRow = ActiveSheet.Cells(ActiveSheet.Rows.Count, "F").End(xlUp).Row
 For Lrow = LastRow To FirstRow Step -1
     
     If Not IsError(ActiveSheet.Cells(Lrow, "E").Value) Then ' fix this
-        Select Case CoachName
+        Select Case Name
         Case "Onirik" '--Branch for Distributors
-            If Not ActiveSheet.Cells(Lrow, "F").Value Like CoachName And Not ActiveSheet.Cells(Lrow, "F").Row = "1" Then
+            If Not ActiveSheet.Cells(Lrow, "F").Value Like Name And Not ActiveSheet.Cells(Lrow, "F").Row = "1" Then
                 ActiveSheet.Cells(Lrow, "F").EntireRow.Delete
             End If
-        Case "*Fulton Hogan*", "Harrison Grierson", "CIGNA" '--Branch for Companies - can I use wilds for Fulton Hogan?
-            If Not ActiveSheet.Cells(Lrow, "C").Value Like "*" & CoachName & "*" And Not ActiveSheet.Cells(Lrow, "C").Row = "1" Then
+        Case "Fulton Hogan" '--Branch for Fulton Hogan (NZ & Aus).  Can't use wilds so making seperate branch
+            If Not (ActiveSheet.Cells(Lrow, "C").Value Like "Fulton Hogan Au" Or ActiveSheet.Cells(Lrow, "C").Value Like "Fulton Hogan NZ") And Not ActiveSheet.Cells(Lrow, "C").Row = "1" Then
+                ActiveSheet.Cells(Lrow, "C").EntireRow.Delete
+            End If
+        Case "Harrison Grierson", "CIGNA" '--Branch for other Companies
+            If Not ActiveSheet.Cells(Lrow, "C").Value Like Name And Not ActiveSheet.Cells(Lrow, "C").Row = "1" Then
                 ActiveSheet.Cells(Lrow, "C").EntireRow.Delete
             End If
         Case Else '--Branch for Coaches
-            If Not ActiveSheet.Cells(Lrow, "E").Value Like CoachName And Not ActiveSheet.Cells(Lrow, "E").Row = "1" Then
+            If Not ActiveSheet.Cells(Lrow, "E").Value Like Name And Not ActiveSheet.Cells(Lrow, "E").Row = "1" Then
                 ActiveSheet.Cells(Lrow, "E").EntireRow.Delete
             End If
         End Select
@@ -190,7 +191,7 @@ Sub Main()
     Call CoachesReport("Harrison Grierson")
     
     'Next Steps:
-    ' 3) write processes to create each report. Includes copying each sheet
+    
     ' 4) copy header into the top line of each report - Call Add_Header
     ' 5) export each report to file
     ' 6) delete all extra tabs from filtered report - Call DeleteExtraSheets
