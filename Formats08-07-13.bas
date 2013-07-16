@@ -23,27 +23,28 @@ Sub CopyHeader()
 End Sub
 
 'adds header to Active and FL Certificate sheets. Header cannot be added before sorting or selection
-Sub Add_Header()
-    Sheets("Active").Select
+Sub Add_Header(ByVal Name As String)
+    Sheets(Name).Select
     Call AddFirstRow
     Call CopyHeader
-    Sheets("Active").Select
+    Sheets(Name).Select
     Rows("1:1").Select
     ActiveSheet.Paste
-    Sheets("FL Certificates").Select
-    Call AddFirstRow
-    Call CopyHeader
-    Worksheets("FL Certificates").Select
-    Rows("1:1").Select
-    ActiveSheet.Paste
+'    Sheets("FL Certificates").Select
+'    Call AddFirstRow
+'    Call CopyHeader
+'    Worksheets("FL Certificates").Select
+'    Rows("1:1").Select
+'    ActiveSheet.Paste
 End Sub
 
 'Deletes extra sheets
 Sub DeleteExtraSheets()
     Application.DisplayAlerts = False
+    On Error Resume Next
     Sheets("Admin codes and info").Delete
     Sheets("Misc accounts").Delete
-    Sheets("Coach and Dist Finished").Delete
+    Sheets("Coach and Dist Completed").Delete
     Sheets("Sub cancelled").Delete
     Application.DisplayAlerts = True
 End Sub
@@ -125,6 +126,8 @@ Sub CoachesReport(ByVal Name As String)
     End With
     
     RemoveOtherCoaches (Name) 'Pass in the name passed in at the top
+    Add_Header (Name) ' Adds a header to the page using the same name parameter
+    SendTabsToFile (Name) ' Sends the tabs to a file, passing in the name parameter
     End Sub
    
    Sub RemoveOtherCoaches(ByVal Name As String) 'pass coach name to search for and filter by
@@ -166,16 +169,22 @@ Next Lrow
     
 End Sub
 
-Sub SendTabsToFile()
+Sub SendTabsToFile(ByVal Name As String)
      '-- Save a copy for Blair.  Will need to Edit Save locations.  Need to change file type to plain xls.  No macro enabled
    ' ActiveWorkbook.SaveAs Filename:="Z:\Windows Shared Folder\01.Work - Brava\Strada7\Levels Passed by Members.xls", FileFormat:=xlAddIn8
     '--Copy the filterd worksheet into new tabs.  Will come back to the certificate tab as it will require logic
     '--Fulton Hogan's report is first
     'ActiveWorkbook.Sheets("Active").Copy
+    Application.DisplayAlerts = False
+    Dim relativePath As String
+    relativePath = ThisWorkbook.Path & "\" & "Levels Passed by Members " & Day(Now()) & "-" & Month(Now()) & "-" & Year(Now()) & " " & Name & ".xls"
+    ActiveWorkbook.SaveAs Filename:=relativePath
+    Application.DisplayAlerts = True
+  
 End Sub
 
 ' Levels_Passed_Formatting Macro:  Main method calls all of the other methods to create custom reports for each coach.
-Sub Main()
+Sub MAIN()
     Sheets("FL Certificates").Select
     Call RemoveIDAndFormatRow
     Sheets("Active").Select
@@ -189,10 +198,11 @@ Sub Main()
     Call CoachesReport("Onirik")
     Call CoachesReport("Fulton Hogan")
     Call CoachesReport("Harrison Grierson")
+    Call Add_Header("Active")
     
     'Next Steps:
     
-    ' 4) copy header into the top line of each report - Call Add_Header
+   
     ' 5) export each report to file
     ' 6) delete all extra tabs from filtered report - Call DeleteExtraSheets
     ' 7) for this iteration ignore FL certificates, but plan how to deal with them.
