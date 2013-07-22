@@ -68,8 +68,13 @@ End Sub
 Sub RemoveIDAndFormatRow()
     Rows.Select
     Selection.RowHeight = 15
-    Columns("A:A").Select
-    Selection.Delete
+    Columns("A:A").Delete
+    'set width of cols
+    Columns("A").ColumnWidth = 25
+    Columns("B").ColumnWidth = 15
+    Columns("C").ColumnWidth = 24.71
+    
+    
 End Sub
 
 'Creates filtered report, that all the other reports will be built from.
