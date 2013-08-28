@@ -73,6 +73,7 @@ Sub RemoveIDAndFormatRow()
     Columns("A").ColumnWidth = 25
     Columns("B").ColumnWidth = 15
     Columns("C").ColumnWidth = 24.71
+    Columns("I:R").ColumnWidth = 11
     
     
 End Sub
