@@ -1,0 +1,4 @@
+Figure out how to get logs displayed
+
+Write basic features needed for the class template i.e setters and getters for the filepath, 
+Code to open the new file, logging and main method.
